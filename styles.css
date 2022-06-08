@@ -1,0 +1,66 @@
+#main {
+   width: 600px; 
+   height: 350px; 
+   border: 1px solid gray;
+   border-radius: 15px;
+   background-color: #FFE4B5; 
+   font-family: 'Raleway', sans-serif;
+   font-style: italic;
+   font-weight: bold;
+}
+
+.command {
+   margin: 25px;
+}
+
+#input {
+   width: 250px;
+   border: 1px solid gray;
+   border-radius: 15px; 
+   margin-left: 25px; 
+   margin-bottom: 15px;
+   background-color: #dfe7e6; 
+}
+
+#btn {
+   width: 80px;
+   border: 1px solid gray;
+   border-radius: 15px; 
+   margin-left: 15px; 
+   text-align: center; 
+   font-weight: bold;
+   font-family: 'Raleway', sans-serif;
+}
+
+#windows {
+   display: flex;
+}
+
+.textinp, .textout {
+   margin-left: 37px;
+   margin-bottom: 10px;
+}
+
+#window_inp, #window_out {
+   width: 250px; 
+   height: 150px;
+   border: 1px solid gray;
+   border-radius: 15px; 
+   margin-top: 0px;
+   margin-left: 25px;
+   padding-top: 0px;
+   font-size: 12px; 
+   background-color:#dfe7e6;
+   
+}
+
+.calc {
+   color: gray;
+   margin-left: 270px;
+   margin-top: 20px;
+   font-size: 10px;
+}
+
+ul {
+   margin-left: -12px;
+}

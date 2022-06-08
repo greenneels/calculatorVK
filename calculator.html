@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+   <meta charset="UTF-8" lang="ru">
+   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <link href="styles.css" rel="stylesheet">
+   <link rel="preconnect" href="https://fonts.googleapis.com">
+   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+   <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@100&display=swap" rel="stylesheet">
+   <title>calculatorVK</title>
+</head>
+
+<body>
+
+   <div id="main">
+      <p class="command">command:</p>
+
+      <input id="input" value=" ">
+
+      <button id="btn">submit</button>
+
+      <div id="windows">
+         <div class="in">
+            <p class="textinp">inp:</p>
+            <p id="window_inp"></p>
+         </div>
+
+         <div class="ou">
+            <p class="textout">out:</p>
+            <p id="window_out"></p>
+         </div>
+      </div>
+
+      <p class="calc">calculatorVK</p>
+   </div>
+
+   <script>
+
+      let input = document.querySelector('#input');
+      let button = document.querySelector('#btn');
+      let inp = document.querySelector('#window_inp');
+      let out = document.querySelector('#window_out');
+
+      let arrObj = [];
+      let arrFn = [];
+
+      button.addEventListener('click', function () {
+
+         let arrWordsInput = String(input.value).split(' ')       // преобразуем инпут в массив слов
+
+         // КОМАНДА VAR 
+         if (arrWordsInput.includes('var')) {                     // если инпут содержит var
+
+            // СООБЩЕНИЕ ОБ ОШИБКЕ ПРИ РАБОТЕ С VAR
+            if (arrWordsInput.includes('=')) {                    // если массив содержит "var =" - это ошибка
+
+               let ul = document.createElement('ul');
+               let li = document.createElement('li');
+
+               li.textContent = "Ошибка! var не может быть со значением"
+               ul.append(li)
+               out.append(ul)
+
+               let lis = out.querySelectorAll('li')
+               for (let li of lis) {
+                  if (lis.length > 3) {
+                     lis[0].remove()
+                  }
+               }
+
+               // ЕСЛИ VAR ВВЕДЕН БЕЗ ОШИБОК  
+            } else {
+
+               const map = new Map()                               // создаем map
+               let name = input.value.split(' ')[2]                // задаем имя переменной 
+               map.set(name, 0)                                    // задаем переменной имя и значение 0
+               const objKeyMean = Object.fromEntries(map)          // преобразуем в объект 
+               arrObj.push(objKeyMean)
+               console.log(arrObj)                                 // проверка, объект создан и добавлен в массив
+
+               let ul = document.createElement('ul');              // список для окна inp, с уже введенными командами 
+               let li = document.createElement('li');
+
+               li.textContent = input.value;
+               ul.append(li)
+               inp.append(ul)
+
+               let lis = inp.querySelectorAll('li')
+               for (let li of lis) {
+                  if (lis.length > 5) {
+                     lis[0].remove()
+                  }
+               }
+            }
+
+            // КОМАНДА LET   
+         } else if (arrWordsInput.includes('let')) {
+
+            let strNum = Number(input.value.split(" ")[4])         // получаем значение для переменной 
+
+            const map = new Map()                                  // создаем map
+            let nameMean = input.value.split(" ")[2]               // получаем имя переменной
+            map.set(nameMean, strNum)                              // объявляем объект с ключом и значением 
+            const obj = Object.fromEntries(map)                    // map преобразуем в объект
+            arrObj.push(obj)
+            console.log(arrObj)                                    // проверка
+
+            let ul = document.createElement('ul')                  // создаем список 
+            let li = document.createElement('li')                  // создаем пункты списка
+
+            li.textContent = nameMean + " " + "=" + " " + strNum.toFixed(2)
+            ul.append(li)
+            inp.append(ul)
+
+            let lis = inp.querySelectorAll('li')
+            for (let li of lis) {
+               if (lis.length > 5) {
+                  lis[0].remove()
+               }
+            }
+
+            // КОМАНДА PRINTVARS                                   // выводит все известные значения
+         } else if (arrWordsInput.includes('printvars')) {
+            for (let elems of arrObj) {
+               let ul = document.createElement('ul');
+               let li = document.createElement('li');
+               for (let b in elems) {
+                  li.innerHTML += b + " " + "=" + " " + elems[b].toFixed(2)
+
+                  ul.append(li)
+                  out.append(ul)
+
+                  let lis = out.querySelectorAll('li')
+                  for (let li of lis) {
+                     if (lis.length > 5) {
+                        lis[0].remove()
+                     }
+                  }
+               }
+            }
+            console.log(arrObj)                                    // проверка
+
+            // КОМАНДА PRINT
+         } else if (arrWordsInput.includes('print')) {             // выводит введенное значение
+
+            let arrGen = [...arrObj, ...arrFn]
+            let nameSearch = input.value.split(" ")[2];
+
+            function searchMean(arrGen, nameSearch) {
+               for (let elem of arrGen) {
+                  for (let i in elem) {
+                     if (nameSearch === i) {
+                        return elem[i]
+                     }
+                  }
+               }
+            }
+
+            let l = searchMean(arrGen, nameSearch)
+
+            let ul = document.createElement('ul');
+            let li = document.createElement('li');
+
+            li.innerHTML = nameSearch + " " + "=" + " " + l.toFixed(2)
+
+            ul.append(li)
+            out.append(ul)
+
+            let lis = out.querySelectorAll('li')
+            for (let li of lis) {
+               if (lis.length > 5) {
+                  lis[0].remove()
+               }
+            }
+
+            // КОМАНДА FN+
+         } else if (arrWordsInput.includes('fn' && '+')) {
+
+            let arrGen = [...arrObj, ...arrFn];
+            let x = input.value.split(" ")[4];
+            let resX = 0;
+
+            let y = input.value.split(" ")[6];
+            let resY = 0;
+
+            function summeanX(arrGen, x, resX) {
+               for (let elem of arrGen) {
+                  for (let o in elem) {
+                     if (x === o) {
+                        resX = elem[o]
+                        return resX
+                     }
+                  }
+               }
+            }
+
+            function summeanY(arrGen, y, resY) {
+               for (let elems of arrGen) {
+                  for (let i in elems) {
+                     if (y === i) {
+                        resY = elems[i]
+                        return resY
+                     }
+                  }
+               }
+            }
+
+            let d = summeanX(arrGen, x, resX)
+            let c = summeanY(arrGen, y, resY)
+            let k = d + c
+
+            const map = new Map()                                 // создаем map
+            let nameFn = input.value.split(" ")[2]                // задаем имя (ключ переменной) 
+            map.set(nameFn, k)                                    // задаем переменной имя и значение
+            const objKeyNameFn = Object.fromEntries(map)          // преобразуем в объект 
+            arrFn.push(objKeyNameFn)                              // добавляем в массив с 'функциями'
+            console.log(arrFn)                                    // проверка
+            console.log(arrGen)                                   // проверка
+
+            let ul = document.createElement('ul');
+            let li = document.createElement('li');
+
+            li.textContent += nameFn + " " + "=" + " " + k.toFixed(2)
+
+            ul.append(li);
+            out.append(ul);
+
+            let lis = out.querySelectorAll('li')
+            for (let li of lis) {
+               if (lis.length > 5) {
+                  lis[0].remove()
+               }
+            }
+
+            console.log(k)                                        // проверка
+
+            // КОМАНДА FN-
+         } else if (arrWordsInput.includes('fn' && '-')) {
+
+            let arrGen = [...arrObj, ...arrFn];
+            let x = input.value.split(" ")[4];
+            let resX = 0;
+
+            let y = input.value.split(" ")[6];
+            let resY = 0;
+
+            function summeanX(arrGen, x, resX) {
+               for (let elem of arrGen) {
+                  for (let o in elem) {
+                     if (x === o) {
+                        resX = elem[o]
+                        return resX
+                     }
+                  }
+               }
+            }
+
+            function summeanY(arrGen, y, resY) {
+               for (let elems of arrGen) {
+                  for (let i in elems) {
+                     if (y === i) {
+                        resY = elems[i]
+                        return resY
+                     }
+                  }
+               }
+            }
+
+            let d = summeanX(arrGen, x, resX)
+            let c = summeanY(arrGen, y, resY)
+            let k = d - c
+
+            const map = new Map()                                 // создаем map
+            let nameFn = input.value.split(" ")[2]                // задаем имя (ключ переменной) 
+            map.set(nameFn, k)                                    // задаем переменной имя и значение
+            const objKeyNameFn = Object.fromEntries(map)          // преобразуем в объект 
+            arrFn.push(objKeyNameFn)                              // добавляем в массив с 'функциями'
+            console.log(arrFn)
+
+            let ul = document.createElement('ul');
+            let li = document.createElement('li');
+
+            li.textContent += nameFn + " " + "=" + " " + k.toFixed(2)
+
+            ul.append(li);
+            out.append(ul);
+
+            let lis = out.querySelectorAll('li')
+            for (let li of lis) {
+               if (lis.length > 5) {
+                  lis[0].remove()
+               }
+            }
+
+            console.log(k)                                        // проверка
+
+            // КОМАНДА FN/
+         } else if (arrWordsInput.includes('fn' && '/')) {
+
+            let arrGen = [...arrObj, ...arrFn];
+            let x = input.value.split(" ")[4];
+            let resX = 0;
+
+            let y = input.value.split(" ")[6];
+            let resY = 0;
+
+            function summeanX(arrGen, x, resX) {
+               for (let elem of arrGen) {
+                  for (let o in elem) {
+                     if (x === o) {
+                        resX = elem[o]
+                        return resX
+                     }
+                  }
+               }
+            }
+
+            function summeanY(arrGen, y, resY) {
+               for (let elems of arrGen) {
+                  for (let i in elems) {
+                     if (y === i) {
+                        resY = elems[i]
+                        return resY
+                     }
+                  }
+               }
+            }
+
+            let d = summeanX(arrGen, x, resX)
+            let c = summeanY(arrGen, y, resY)
+            let k = d / c
+
+            const map = new Map()                                 // создаем map
+            let nameFn = input.value.split(" ")[2]                // задаем имя (ключ переменной) 
+            map.set(nameFn, k)                                    // задаем переменной имя и значение
+            const objKeyNameFn = Object.fromEntries(map)          // преобразуем в объект 
+            arrFn.push(objKeyNameFn)                              // добавляем в массив с 'функциями'
+            console.log(arrFn)
+
+            let ul = document.createElement('ul');
+            let li = document.createElement('li');
+
+            li.textContent += nameFn + " " + "=" + " " + k.toFixed(2)
+
+            ul.append(li);
+            out.append(ul);
+
+            let lis = out.querySelectorAll('li')
+            for (let li of lis) {
+               if (lis.length > 5) {
+                  lis[0].remove()
+               }
+            }
+
+            console.log(k)                                        // проверка
+
+            //КОМАНДА FN*
+         } else if (arrWordsInput.includes('fn' && '*')) {
+
+            let arrGen = [...arrObj, ...arrFn];
+            let x = input.value.split(" ")[4];
+            let resX = 0;
+
+            let y = input.value.split(" ")[6];
+            let resY = 0;
+
+            function summeanX(arrGen, x, resX) {
+               for (let elem of arrGen) {
+                  for (let o in elem) {
+                     if (x === o) {
+                        resX = elem[o]
+                        return resX
+                     }
+                  }
+               }
+            }
+
+            function summeanY(arrGen, y, resY) {
+               for (let elems of arrGen) {
+                  for (let i in elems) {
+                     if (y === i) {
+                        resY = elems[i]
+                        return resY
+                     }
+                  }
+               }
+            }
+
+            let d = summeanX(arrGen, x, resX)
+            let c = summeanY(arrGen, y, resY)
+            let k = d * c
+
+            const map = new Map()                                 // создаем map
+            let nameFn = input.value.split(" ")[2]                // задаем имя (ключ переменной) 
+            map.set(nameFn, k)                                    // задаем переменной имя и значение
+            const objKeyNameFn = Object.fromEntries(map)          // преобразуем в объект 
+            arrFn.push(objKeyNameFn)                              // добавляем в массив с 'функциями'
+            console.log(arrFn)
+
+            let ul = document.createElement('ul');
+            let li = document.createElement('li');
+
+            li.textContent += nameFn + " " + "=" + " " + k.toFixed(2)
+
+            ul.append(li);
+            out.append(ul);
+
+            let lis = out.querySelectorAll('li')
+            for (let li of lis) {
+               if (lis.length > 5) {
+                  lis[0].remove()
+               }
+            }
+
+            console.log(k)                                        // проверка
+
+            // КОМАНДА PRINTFNS
+         } else if (arrWordsInput.includes('printfns')) {
+            for (let elems of arrFn) {
+               let ul = document.createElement('ul');
+               let li = document.createElement('li');
+               for (let b in elems) {
+                  li.innerHTML += b + " " + "=" + " " + elems[b].toFixed(2)
+
+                  ul.append(li)
+                  out.append(ul)
+
+                  let lis = out.querySelectorAll('li')
+                  for (let li of lis) {
+                     if (lis.length > 5) {
+                        lis[0].remove()
+                     }
+                  }
+               }
+            }
+            console.log(arrObj)
+         } else {
+            let ul = document.createElement('ul');
+            let li = document.createElement('li');
+
+            li.textContent += "Введена неверная команда. Попробуйте еще раз"
+
+            ul.append(li);
+            out.append(ul);
+
+            let lis = out.querySelectorAll('li')
+            for (let li of lis) {
+               if (lis.length > 5) {
+                  lis[0].remove()
+               }
+            }
+         }
+      })  
+   </script>
+</body>
+
+</html>
